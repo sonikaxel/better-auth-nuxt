@@ -1,8 +1,24 @@
-import type { H3Event } from 'h3';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { ServerEvent } from '../server/internal/nitro-compact';
 
-export function appendCookieHeader(event: H3Event, header: string): void {
-  const nodeResponse = event.node?.res;
+export function appendCookieHeader(event: ServerEvent, header: string): void {
+  // ------------- Event = H3Event
 
+  const nodeResponse = (
+    event as unknown as {
+      node?: {
+        res: Response & {
+          setHeader(
+            name: string,
+            value: number | string | readonly string[],
+          ): ServerResponse<IncomingMessage>;
+          getHeader(name: string): string | number | string[] | undefined;
+        };
+      };
+    }
+  ).node?.res;
+
+  // Event is H3Event, append header to event and exit
   if (nodeResponse?.setHeader) {
     const current = nodeResponse.getHeader?.('set-cookie');
 
@@ -19,13 +35,17 @@ export function appendCookieHeader(event: H3Event, header: string): void {
     return;
   }
 
-  const eventWithResponse = event as H3Event & {
+  // ------------ Event = RequestEvent
+
+  // Fallback to RequestEvent
+  const eventWithResponse = event as ServerEvent & {
     res?: { headers?: Headers };
     response?: { headers?: Headers };
   };
 
   const responseHeaders
     = eventWithResponse.res?.headers ?? eventWithResponse.response?.headers;
+
   responseHeaders?.append('set-cookie', header);
 }
 
@@ -49,7 +69,7 @@ function getSetCookieHeaders(headers: Headers): string[] {
   return header ? [header] : [];
 }
 
-export function appendSetCookieHeaders(event: H3Event, headers: Headers): void {
+export function appendSetCookieHeaders(event: ServerEvent, headers: Headers): void {
   for (const header of getSetCookieHeaders(headers))
     appendCookieHeader(event, header);
 }

@@ -1,4 +1,4 @@
-import { defineEventHandler, toWebRequest } from 'h3';
+import { defineEventHandler, toWebRequest } from '../../internal/nitro-compact';
 import { serverAuth } from '../../utils';
 
 export default defineEventHandler(async (event) => {

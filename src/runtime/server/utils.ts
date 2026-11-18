@@ -1,15 +1,15 @@
 import serverAuthConfig from '#auth/server';
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import defu from 'defu';
-import type { H3Event } from 'h3';
-import { useRuntimeConfig } from 'nitropack/runtime';
 import type { ModuleOptions } from '../../types';
 import type { AuthServer, AuthServerConfig } from '../types';
 import { getAPIBasePath } from '../utils/path';
+import type { ServerEvent } from './internal/nitro-compact';
+import { useRuntimeConfig } from './internal/nitro-compact';
 
 let _serverAuth: AuthServer;
 
-export const serverAuth = (event?: H3Event): AuthServer => {
+export const serverAuth = (event?: ServerEvent): AuthServer => {
   if (!_serverAuth) {
     const runtimeConfig = useRuntimeConfig(event);
 

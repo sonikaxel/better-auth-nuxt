@@ -10,6 +10,7 @@ import {
   createResolver,
   defineNuxtModule,
   getLayerDirectories,
+  resolveServerVariant,
   updateTemplates,
   useLogger
 } from '@nuxt/kit';
@@ -37,9 +38,9 @@ export default defineNuxtModule<ModuleOptions>({
     const layer = getProjectDir(nuxt);
     const logger = useLogger('better-auth-nuxt');
 
-    // (nuxt.options.runtimeConfig.public.auth as ModuleOptions) = {
-    //   cookiePrefix: options.cookiePrefix
-    // };
+    nuxt.options.alias['#better-auth/nitro-compact'] = resolveServerRuntimeShim({
+      resolve: resolver.resolve
+    });
 
     (nuxt.options.runtimeConfig.public.auth as unknown)
       = normalizeOptions(options);
@@ -283,6 +284,19 @@ export function buildRouteRuleTypeTemplate({
     `declare module 'nitropack/types' {`,
     `  interface NitroRouteConfig extends AuthRouteRules {}`,
     `  interface NitroRouteRules extends AuthRouteRules {}`,
+    `}`,
+    `declare module "nitro/types" {`,
+    `interface RouteRuleConfig extends AuthRouteRules {}`,
+    `interface NormalizedRouteRules extends AuthRouteRules {}`,
     `}`
   ].join('\n');
+}
+
+function resolveServerRuntimeShim({ resolve }: { resolve: (path: string) => string }) {
+  const nitro2 = resolve('./runtime/server/internal/nitro2');
+
+  return resolveServerVariant({
+    nuxt: resolve('./runtime/server/internal/nitro3'),
+    nitro2
+  }) ?? nitro2;
 }
