@@ -129,8 +129,11 @@ export default defineNuxtModule<ModuleOptions>({
 
       addServerImports([
         {
-          from: resolver.resolve('./runtime/server/utils'),
+          from: resolver.resolve('./runtime/server/utils/auth'),
           name: 'serverAuth'
+        }, {
+          from: resolver.resolve('./runtime/server/utils/session'),
+          name: 'requireUserSession'
         }
       ]);
 

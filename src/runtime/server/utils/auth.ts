@@ -1,11 +1,11 @@
 import serverAuthConfig from '#auth/server';
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import defu from 'defu';
-import type { ModuleOptions } from '../../types';
-import type { AuthServer, AuthServerConfig } from '../types';
-import { getAPIBasePath } from '../utils/path';
-import type { ServerEvent } from './internal/nitro-compact';
-import { useRuntimeConfig } from './internal/nitro-compact';
+import type { ModuleOptions } from '../../../types';
+import type { AuthServer, AuthServerConfig } from '../../types';
+import { getAPIBasePath } from '../../utils/path';
+import type { ServerEvent } from '../internal/nitro-compact';
+import { useRuntimeConfig } from '../internal/nitro-compact';
 
 let _serverAuth: AuthServer;
 
