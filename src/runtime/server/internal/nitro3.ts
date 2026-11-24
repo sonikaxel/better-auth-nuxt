@@ -1,5 +1,10 @@
 import type { RequestEvent } from 'nuxt/server';
-import { defineEventHandler, useRuntimeConfig, createError, getRequestHeaders as _getRequestHeaders } from 'nuxt/server';
+import {
+  defineEventHandler,
+  useRuntimeConfig,
+  createError,
+  getRequestHeaders as _getRequestHeaders
+} from 'nuxt/server';
 
 export type ServerEvent = RequestEvent;
 
@@ -10,7 +15,7 @@ export function toWebRequest(event: ServerEvent): Request {
 }
 
 export function getRequestHeaders(event: ServerEvent): Record<string, string> {
-  return _getRequestHeaders(event)
+  return _getRequestHeaders(event);
 }
 
 export function createAuthError(input: {

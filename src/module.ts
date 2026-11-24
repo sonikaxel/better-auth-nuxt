@@ -34,6 +34,10 @@ export default defineNuxtModule<ModuleOptions>({
   // Default configuration options of the Nuxt module
   defaults: {},
   async setup(options, nuxt) {
+    const optionsNormalized = normalizeOptions(options);
+
+    if (!optionsNormalized.enabled) return;
+
     const resolver = createResolver(import.meta.url);
     const layer = getProjectDir(nuxt);
     const logger = useLogger('better-auth-nuxt');
@@ -42,8 +46,22 @@ export default defineNuxtModule<ModuleOptions>({
       resolve: resolver.resolve
     });
 
+    addImports([
+      {
+        from: resolver.resolve('./runtime/utils/config'),
+        name: 'defineAuthClient'
+      }
+    ]);
+
+    addServerImports([
+      {
+        from: resolver.resolve('./runtime/server/utils/config'),
+        name: 'defineAuthServer'
+      }
+    ]);
+
     (nuxt.options.runtimeConfig.public.auth as unknown)
-      = normalizeOptions(options);
+      = optionsNormalized;
 
     let serverConfigPath = join(layer.server, configFileName);
     let clientConfigPath = join(layer.app, configFileName);
@@ -74,6 +92,12 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.alias['#auth/server'] = serverConfigPath;
     nuxt.options.alias['#auth/client'] = clientConfigPath;
+
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({
+        path: serverConfigPath
+      });
+    });
 
     const routeRulesPath = addTemplate({
       filename: 'better-auth/route-rules.ts',
@@ -193,13 +217,12 @@ async function generateDefaultConfigFiles(opts: {
     await writeFile(
       filePath.server,
       [
-        `import type { BetterAuthOptions } from 'better-auth';`,
-        ``,
-        `export default {`,
+        `export default defineAuthServer({`,
         `  emailAndPassword: {`,
         `    enabled: true`,
         `  }`,
-        `} satisfies BetterAuthOptions;`
+        `});`,
+        ``
       ].join('\n')
     );
   }
@@ -209,11 +232,10 @@ async function generateDefaultConfigFiles(opts: {
     await writeFile(
       filePath.client,
       [
-        `import type { BetterAuthClientOptions } from 'better-auth';`,
-        ``,
-        `export default {`,
+        `export default defineAuthClient({`,
         `  // Better auth client options`,
-        `} satisfies BetterAuthClientOptions;`
+        `});`,
+        ``
       ].join('\n')
     );
   }
@@ -230,12 +252,16 @@ function buildAuthConfigTemplate(opts: {
 
   const serverConfigCode = [
     `import serverConfig from ${JSON.stringify(_serverConfigPath)};`,
-    `export default serverConfig;`
+    ``,
+    `export default serverConfig;`,
+    ``
   ].join('\n');
 
   const clientConfigCode = [
     `import clientConfig from ${JSON.stringify(_clientConfigPath)};`,
-    `export default clientConfig;`
+    ``,
+    `export default clientConfig;`,
+    ``
   ].join('\n');
 
   return {
@@ -260,10 +286,10 @@ export function buildRouteRuleTypeTemplate({
   return [
     `import { UserMatch } from '${resolve('./runtime/utils/match-user')}';`,
     `import type { AuthMode } from '${resolve('./runtime/types')}';`,
-    `import authServerConfig from '${serverAuthPath}';`,
+    `import serverAuthConfig from '${serverAuthPath}';`,
     `import type { Auth } from 'better-auth';`,
     ``,
-    `type AuthUser = Auth<typeof authServerConfig>['$Infer']['Session']['user'];`,
+    `type AuthUser = Auth<ReturnType<typeof serverAuthConfig>>['$Infer']['Session']['user'];`,
     ``,
     `type UserMatchable<T extends AuthUser> = Required<{`,
     `  [P in keyof T as NonNullable<T[P]> extends Date ? never : P]: NonNullable<`,

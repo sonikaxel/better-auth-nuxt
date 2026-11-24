@@ -5,6 +5,7 @@ export function normalizeOptions(
   options: ModuleOptions
 ): ModuleOptionsNormalized {
   const normalizedOptions: ModuleOptionsNormalized = defu(options, {
+    enabled: true,
     redirects: {
       login: '/login',
       guest: '/'

@@ -1,9 +1,7 @@
-import type { BetterAuthOptions } from 'better-auth';
+import { defineAuthServer } from '#build/types/nitro-imports';
 
-const authConfig = {
+export default defineAuthServer({
   emailAndPassword: {
     enabled: true
   }
-} satisfies BetterAuthOptions;
-
-export default authConfig;
+});

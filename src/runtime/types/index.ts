@@ -5,7 +5,7 @@ import type { VueAuthClient } from 'better-auth/vue';
 import type { UserMatch } from '../utils/match-user';
 
 /** Server auth config */
-export type AuthServerConfig = typeof serverAuthConfig;
+export type AuthServerConfig = ReturnType<typeof serverAuthConfig>;
 /** Server auth */
 export type AuthServer = Auth<AuthServerConfig>;
 
@@ -29,7 +29,7 @@ export type ClientAuthSession = Omit<AuthSession, 'token'>;
 /** Client auth config */
 export type AuthClientConfig = typeof clientAuthConfig;
 /** Client auth */
-export type AuthClient = VueAuthClient<AuthClientConfig>;
+export type AuthClient = VueAuthClient<ReturnType<AuthClientConfig>>;
 
 /** Auth Mode */
 export type AuthMode = 'guest' | 'user';

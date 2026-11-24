@@ -29,7 +29,7 @@ There no offical module registered in nuxt-module library, so to use this projec
 
 1. Copy all the content from `src/` directory to `modules/better-auth/` directory of your project.
 2. Open `module.ts` file from `modules/better-auth/`
-   and rename all import statements ending with `@nuxt/kit` to `nuxt/kit`.
+   and rename all import statements ending with `@nuxt/kit` to `nuxt/kit` and `@nuxt/schema` to `nuxt/schema`.
 3. Rename `module.ts` file to `index.ts`.
 4. Thats it! nuxt will automatically register this module to your nuxt app if above steps are done correctly.
 
