@@ -1,4 +1,5 @@
 export interface ModuleOptions {
+  enabled?: boolean;
   cookiePrefix?: string;
   redirects?: {
     /** Login page route, default '/login' */
@@ -15,6 +16,7 @@ export interface ModuleOptions {
 }
 
 export type ModuleOptionsNormalized = {
+  enabled: boolean;
   redirects: {
     login: string;
     logout?: string;

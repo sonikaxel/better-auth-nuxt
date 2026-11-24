@@ -1,5 +1,5 @@
-import type { BetterAuthClientOptions } from 'better-auth';
+import { defineAuthClient } from '#imports';
 
-export default {
+export default defineAuthClient({
   // Better auth client options
-} satisfies BetterAuthClientOptions;
+});

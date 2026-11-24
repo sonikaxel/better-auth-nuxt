@@ -11,7 +11,7 @@ export function toWebRequest(event: ServerEvent): Request {
 }
 
 export function getRequestHeaders(event: ServerEvent): Record<string, string> {
-  return _getRequestHeaders(event) as Record<string, string>
+  return _getRequestHeaders(event) as Record<string, string>;
 }
 
 export function createAuthError(input: {
